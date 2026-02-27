@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+{% block title %}Régression – Auto-MPG{% endblock %}
+
+{% block content %}
+<div class="container">
+
+    <div class="page-header">
+        <h1>🚗 Partie 2 – Régression Auto-MPG</h1>
+        <p>Prédiction de la consommation de carburant (miles per gallon) en fonction des caractéristiques du véhicule.</p>
+    </div>
+
+    <!-- Scores des modèles -->
+    {% if scores %}
+    <section class="section">
+        <h2 class="section-title">Performances des Modèles (R²)</h2>
+        <div class="scores-grid">
+            {% for name, metrics in scores.items() %}
+            <div class="score-card {% if metrics.R2 == scores.values()|map(attribute='R2')|list|max %}score-best{% endif %}">
+                <div class="score-name">{{ name }}</div>
+                <div class="metrics-list">
+                    <div class="metric-row">
+                        <span class="metric-label">R²</span>
+                        <span class="metric-value">{{ "%.4f"|format(metrics.R2) }}</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">MAE</span>
+                        <span class="metric-value">{{ "%.3f"|format(metrics.MAE) }}</span>
+                    </div>
+                    <div class="metric-row">
+                        <span class="metric-label">MSE</span>
+                        <span class="metric-value">{{ "%.3f"|format(metrics.MSE) }}</span>
+                    </div>
+                </div>
+                <div class="score-bar">
+                    <div class="score-fill" style="width: {{ [metrics.R2 * 100, 0]|max }}%"></div>
+                </div>
+                {% if metrics.R2 == scores.values()|map(attribute='R2')|list|max %}<span class="best-badge">✓ Meilleur</span>{% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Formulaire de prédiction -->
+    <section class="section">
+        <h2 class="section-title">Prédiction de Consommation (MPG)</h2>
+        <div class="form-layout">
+
+            <div class="form-container">
+                <form method="POST" action="{{ url_for('autompg') }}">
+                    <div class="form-grid">
+
+                        <div class="form-group">
+                            <label>Nombre de cylindres</label>
+                            <select name="cylinders" class="form-input">
+                                <option value="4" selected>4 cylindres</option>
+                                <option value="6">6 cylindres</option>
+                                <option value="8">8 cylindres</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Cylindrée (cu. in.)</label>
+                            <input type="number" name="displacement" value="150" min="50" max="500" step="1" required class="form-input">
+                            <small>Plage typique : 68 – 455</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Puissance (chevaux)</label>
+                            <input type="number" name="horsepower" value="100" min="40" max="250" step="1" required class="form-input">
+                            <small>Plage typique : 46 – 230</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Poids (lbs)</label>
+                            <input type="number" name="weight" value="2500" min="1500" max="6000" step="10" required class="form-input">
+                            <small>Plage typique : 1 613 – 5 140</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Accélération (0-60 mph, s)</label>
+                            <input type="number" name="acceleration" value="15" min="8" max="25" step="0.1" required class="form-input">
+                            <small>Plage typique : 8.0 – 24.8</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Année modèle (70-82)</label>
+                            <input type="number" name="model_year" value="76" min="70" max="82" step="1" required class="form-input">
+                            <small>70 = 1970, 82 = 1982</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Origine</label>
+                            <select name="origin" class="form-input">
+                                <option value="1" selected>1 – Américaine</option>
+                                <option value="2">2 – Européenne</option>
+                                <option value="3">3 – Japonaise</option>
+                            </select>
+                        </div>
+
+                    </div>
+
+                    <button type="submit" class="btn btn-green btn-large">🔍 Prédire la consommation</button>
+                </form>
+            </div>
+
+            <!-- Résultat -->
+            <div class="result-panel">
+                {% if error %}
+                <div class="alert alert-error">
+                    <strong>Erreur :</strong> {{ error }}
+                </div>
+                {% endif %}
+
+                {% if prediction is not none %}
+                <div class="result-card result-mpg">
+                    <div class="result-icon">⛽</div>
+                    <h3>Consommation prédite</h3>
+                    <div class="result-value">{{ prediction }} <span class="result-unit">mpg</span></div>
+                    <div class="mpg-interpretation">
+                        {% if prediction >= 30 %}
+                        <span class="eco-badge eco-good">🌿 Économique</span>
+                        {% elif prediction >= 20 %}
+                        <span class="eco-badge eco-medium">🔶 Modéré</span>
+                        {% else %}
+                        <span class="eco-badge eco-bad">🔴 Énergivore</span>
+                        {% endif %}
+                    </div>
+                    <p class="mpg-note">{{ "%.1f"|format(235.214 / prediction) }} L/100km équivalent</p>
+                </div>
+                {% else %}
+                <div class="result-placeholder">
+                    <div class="placeholder-icon">🚗</div>
+                    <p>Entrez les caractéristiques du véhicule et cliquez sur <strong>"Prédire la consommation"</strong>.</p>
+                </div>
+                {% endif %}
+
+                <div class="info-box">
+                    <h4>ℹ️ À propos des métriques</h4>
+                    <ul>
+                        <li><strong>R²</strong> : proportion de variance expliquée (1 = parfait)</li>
+                        <li><strong>MAE</strong> : erreur absolue moyenne (en mpg)</li>
+                        <li><strong>MSE</strong> : erreur quadratique moyenne</li>
+                    </ul>
+                    <p>Les données ont été normalisées avec <code>StandardScaler</code> avant l'entraînement.</p>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Graphiques -->
+    <section class="section">
+        <h2 class="section-title">Visualisations</h2>
+        <div class="plots-grid">
+            <div class="plot-card">
+                <h4>Influence du paramètre k – KNN Régression</h4>
+                <img src="{{ url_for('static', filename='plots/knn_regression.png') }}" alt="KNN Regression">
+            </div>
+            <div class="plot-card">
+                <h4>Prédictions vs Valeurs Réelles</h4>
+                <img src="{{ url_for('static', filename='plots/regression_scatter.png') }}" alt="Scatter Plot">
+            </div>
+        </div>
+    </section>
+
+</div>
+{% endblock %}

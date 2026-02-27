@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% block title %}Accueil – TP2 ML{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <div class="hero-content">
+        <h1 class="hero-title">TP2 : Implémentation et Déploiement<br>des Modèles de Machine Learning</h1>
+        <p class="hero-subtitle">Méthodes d'ensemble · Bagging · Boosting · Random Forest · Régression</p>
+        <div class="hero-badges">
+            <span class="badge badge-blue">Python</span>
+            <span class="badge badge-green">scikit-learn</span>
+            <span class="badge badge-orange">Flask</span>
+            <span class="badge badge-purple">Pandas</span>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+
+    <!-- Cartes des parties -->
+    <section class="section">
+        <h2 class="section-title">Parties du TP</h2>
+        <div class="cards-grid">
+
+            <div class="card card-blue">
+                <div class="card-icon">📊</div>
+                <h3 class="card-title">Partie 1 – Classification</h3>
+                <p class="card-desc">Prédiction de la classe de revenu (<em>Census Dataset</em>) avec les méthodes d'ensemble : KNN, Arbre de décision, Random Forest et Gradient Boosting.</p>
+                <ul class="card-list">
+                    <li>✔ Validation croisée (GridSearchCV)</li>
+                    <li>✔ Bagging & Random Forest</li>
+                    <li>✔ Gradient Boosting (early stopping)</li>
+                    <li>✔ Courbes ROC & AUC</li>
+                    <li>✔ Importance des variables</li>
+                </ul>
+                <a href="{{ url_for('census') }}" class="btn btn-blue">Tester le modèle →</a>
+            </div>
+
+            <div class="card card-green">
+                <div class="card-icon">🚗</div>
+                <h3 class="card-title">Partie 2 – Régression</h3>
+                <p class="card-desc">Prédiction de la consommation de carburant en miles par gallon (<em>Auto-MPG Dataset</em>) avec KNN, Random Forest et Gradient Boosting.</p>
+                <ul class="card-list">
+                    <li>✔ KNeighborsRegressor</li>
+                    <li>✔ Normalisation (StandardScaler)</li>
+                    <li>✔ Métriques : MAE, MSE, R²</li>
+                    <li>✔ Comparaison des modèles</li>
+                    <li>✔ Visualisation des prédictions</li>
+                </ul>
+                <a href="{{ url_for('autompg') }}" class="btn btn-green">Tester le modèle →</a>
+            </div>
+
+            <div class="card card-orange">
+                <div class="card-icon">🔬</div>
+                <h3 class="card-title">Partie 3 – Expérimentation</h3>
+                <p class="card-desc">Application des méthodes ML sur un nouveau jeu de données de votre choix : Kaggle, UCI Repository, ou tout autre source.</p>
+                <ul class="card-list">
+                    <li>✔ Jeu de données personnalisé</li>
+                    <li>✔ Préparation des données</li>
+                    <li>✔ Algorithme au choix</li>
+                    <li>✔ Rapport individuel PDF</li>
+                </ul>
+                <span class="btn btn-orange btn-disabled">À réaliser individuellement</span>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Graphiques -->
+    <section class="section">
+        <h2 class="section-title">Résultats des Modèles</h2>
+        <div class="plots-grid">
+            <div class="plot-card">
+                <h4>Classification – Influence de k (KNN)</h4>
+                <img src="{{ url_for('static', filename='plots/knn_classification.png') }}" alt="KNN Classification">
+            </div>
+            <div class="plot-card">
+                <h4>Classification – Comparaison des modèles</h4>
+                <img src="{{ url_for('static', filename='plots/models_comparison_census.png') }}" alt="Comparaison Census">
+            </div>
+            <div class="plot-card">
+                <h4>Régression – Influence de k (KNN)</h4>
+                <img src="{{ url_for('static', filename='plots/knn_regression.png') }}" alt="KNN Régression">
+            </div>
+            <div class="plot-card">
+                <h4>Régression – Comparaison des modèles</h4>
+                <img src="{{ url_for('static', filename='plots/models_comparison_regression.png') }}" alt="Comparaison Régression">
+            </div>
+            <div class="plot-card">
+                <h4>Variables Importantes – Random Forest</h4>
+                <img src="{{ url_for('static', filename='plots/feature_importance_census.png') }}" alt="Feature Importance">
+            </div>
+            <div class="plot-card">
+                <h4>Régression – Prédictions vs Réelles</h4>
+                <img src="{{ url_for('static', filename='plots/regression_scatter.png') }}" alt="Scatter Régression">
+            </div>
+        </div>
+    </section>
+
+    <!-- Objectifs -->
+    <section class="section">
+        <h2 class="section-title">Objectifs du TP</h2>
+        <div class="objectives-grid">
+            <div class="obj-item"><span class="obj-icon">🎯</span><p>Consolider la mise en œuvre des algorithmes de machine learning</p></div>
+            <div class="obj-item"><span class="obj-icon">🌲</span><p>Mettre en œuvre les méthodes d'ensemble (Bagging, Boosting)</p></div>
+            <div class="obj-item"><span class="obj-icon">⚙️</span><p>Optimiser, interpréter et expliquer les algorithmes utilisés</p></div>
+            <div class="obj-item"><span class="obj-icon">🚀</span><p>Déployer les modèles de ML et créer des applications utiles</p></div>
+        </div>
+    </section>
+
+</div>
+{% endblock %}

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}TP2 ML - Flask{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="nav-container">
+        <div class="nav-brand">
+            <span class="brand-icon">🤖</span>
+            <span class="brand-text">TP2 – Machine Learning</span>
+        </div>
+        <ul class="nav-links">
+            <li><a href="{{ url_for('index') }}" class="{% if request.endpoint == 'index' %}active{% endif %}">Accueil</a></li>
+            <li><a href="{{ url_for('census') }}" class="{% if request.endpoint == 'census' %}active{% endif %}">Classification</a></li>
+            <li><a href="{{ url_for('autompg') }}" class="{% if request.endpoint == 'autompg' %}active{% endif %}">Régression</a></li>
+        </ul>
+    </div>
+</nav>
+
+<main class="main-content">
+    {% block content %}{% endblock %}
+</main>
+
+<footer class="footer">
+    <p>TP2 – Introduction à l'Intelligence Artificielle | Licence MTQ S6 – 2025/2026</p>
+    <p>Stéphane C. K. TÉKOUABOU (PhD & Ing.) | Université Saint Jean</p>
+</footer>
+
+</body>
+</html>

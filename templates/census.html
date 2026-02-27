@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+{% block title %}Classification – Census{% endblock %}
+
+{% block content %}
+<div class="container">
+
+    <div class="page-header">
+        <h1>📊 Partie 1 – Classification Census</h1>
+        <p>Prédiction de la classe de revenu (> 50K ou ≤ 50K) à partir des caractéristiques socio-démographiques.</p>
+    </div>
+
+    <!-- Scores des modèles -->
+    {% if scores %}
+    <section class="section">
+        <h2 class="section-title">Performances des Modèles</h2>
+        <div class="scores-grid">
+            {% for name, score in scores.items() %}
+            <div class="score-card {% if score == scores.values()|list|max %}score-best{% endif %}">
+                <div class="score-name">{{ name }}</div>
+                <div class="score-value">{{ "%.2f"|format(score * 100) }}%</div>
+                <div class="score-bar">
+                    <div class="score-fill" style="width: {{ score * 100 }}%"></div>
+                </div>
+                {% if score == scores.values()|list|max %}<span class="best-badge">✓ Meilleur</span>{% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Formulaire de prédiction -->
+    <section class="section">
+        <h2 class="section-title">Prédiction de Revenu</h2>
+        <div class="form-layout">
+
+            <div class="form-container">
+                <form method="POST" action="{{ url_for('census') }}">
+                    <div class="form-grid">
+
+                        <div class="form-group">
+                            <label>Âge</label>
+                            <input type="number" name="age" value="35" min="18" max="90" required class="form-input">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Niveau d'éducation (1-15)</label>
+                            <input type="number" name="education_num" value="10" min="1" max="15" required class="form-input">
+                            <small>1=Preschool, 9=HS-grad, 13=Bachelors, 16=Doctorate</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Heures / semaine</label>
+                            <input type="number" name="hours_per_week" value="40" min="1" max="99" required class="form-input">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Gains en capital ($)</label>
+                            <input type="number" name="capital_gain" value="0" min="0" required class="form-input">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Pertes en capital ($)</label>
+                            <input type="number" name="capital_loss" value="0" min="0" required class="form-input">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Niveau d'éducation</label>
+                            <select name="education" class="form-input">
+                                <option value="HS-grad">HS-grad (lycée)</option>
+                                <option value="Some-college">Some-college</option>
+                                <option value="Bachelors" selected>Bachelors (licence)</option>
+                                <option value="Masters">Masters</option>
+                                <option value="Doctorate">Doctorate</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Situation maritale</label>
+                            <select name="marital_status" class="form-input">
+                                <option value="Married-civ-spouse" selected>Marié(e)</option>
+                                <option value="Never-married">Jamais marié(e)</option>
+                                <option value="Divorced">Divorcé(e)</option>
+                                <option value="Separated">Séparé(e)</option>
+                                <option value="Widowed">Veuf/Veuve</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Occupation</label>
+                            <select name="occupation" class="form-input">
+                                <option value="Exec-managerial" selected>Cadre supérieur</option>
+                                <option value="Prof-specialty">Professionnel spécialisé</option>
+                                <option value="Sales">Commerce</option>
+                                <option value="Craft-repair">Artisan / Réparation</option>
+                                <option value="Tech-support">Support technique</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Sexe</label>
+                            <select name="sex" class="form-input">
+                                <option value="Male" selected>Homme</option>
+                                <option value="Female">Femme</option>
+                            </select>
+                        </div>
+
+                    </div>
+
+                    <button type="submit" class="btn btn-blue btn-large">🔍 Prédire le revenu</button>
+                </form>
+            </div>
+
+            <!-- Résultat -->
+            <div class="result-panel">
+                {% if error %}
+                <div class="alert alert-error">
+                    <strong>Erreur :</strong> {{ error }}
+                </div>
+                {% endif %}
+
+                {% if prediction %}
+                <div class="result-card {% if '>' in prediction %}result-high{% else %}result-low{% endif %}">
+                    <div class="result-icon">{{ '💰' if '>' in prediction else '📉' }}</div>
+                    <h3>Résultat de la prédiction</h3>
+                    <div class="result-value">{{ prediction }}</div>
+                    {% if proba %}
+                    <div class="result-confidence">
+                        <span>Confiance : </span>
+                        <strong>{{ proba }}%</strong>
+                        <div class="confidence-bar">
+                            <div class="confidence-fill" style="width: {{ proba }}%"></div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+                {% else %}
+                <div class="result-placeholder">
+                    <div class="placeholder-icon">📋</div>
+                    <p>Remplissez le formulaire et cliquez sur <strong>"Prédire le revenu"</strong> pour obtenir une prédiction.</p>
+                </div>
+                {% endif %}
+
+                <div class="info-box">
+                    <h4>ℹ️ À propos</h4>
+                    <p>Ce modèle a été entraîné sur le dataset <strong>Census</strong> avec les méthodes d'ensemble vues en cours. La classification binaire prédit si le revenu annuel dépasse ou non 50 000$.</p>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Graphiques -->
+    <section class="section">
+        <h2 class="section-title">Visualisations</h2>
+        <div class="plots-grid">
+            <div class="plot-card">
+                <h4>Influence du paramètre k – KNN</h4>
+                <img src="{{ url_for('static', filename='plots/knn_classification.png') }}" alt="KNN k influence">
+            </div>
+            <div class="plot-card">
+                <h4>Importance des variables – Random Forest</h4>
+                <img src="{{ url_for('static', filename='plots/feature_importance_census.png') }}" alt="Feature Importance">
+            </div>
+        </div>
+    </section>
+
+</div>
+{% endblock %}
